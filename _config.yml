@@ -61,28 +61,39 @@ content:
         link: amdocs.com
         sub_title: Senior Software Developer
         caption: February 2018 - Present
-        quote: >
-          TBD
         description: | # this will include new lines to allow paragraphs
-            TBD
-      - layout: right
+            _UXP Systems, Inc. was acquired by Amdocs in February 2018._
+
+            During my tenure in this role, I was a key contributor to the product's migration from a legacy monolith on-premise design to a microservice-based architecture delivered via a SaaS model. Some notable achievements during this time include:
+            * Designed and delivered a complete multi-tenancy strategy including internal product changes and database re-structuring
+            * Working in a technical/team lead role to guide a delivery team through a substantial product version upgrade
+            * Assumed the role of a scrum master, managing JIRA boards and running scrum ceremony meetings
+            * Coordinated requirements between project managers, solution architects and development teams
+            * Provided routine status update reports to senior management
+      - layout: left
         title: UXP Systems
         link: uxpsystems.com
         sub_title: Senior Software Developer
         caption: February 2017 - February 2018
-        quote: >
-          TBD
         description: | # this will include new lines to allow paragraphs
-            TBD
+            During my tenure in this role, I was a key contributor to the product's migration from a legacy monolith on-premise design to a microservice-based architecture delivered via a SaaS model. Some notable achievements during this time include:
+            * Designed and delivered a complete multi-tenancy strategy including internal product changes and database re-structuring
+            * Working in a technical/team lead role to guide a delivery team through a substantial product version upgrade
+            * Assumed the role of a scrum master, managing JIRA boards and running scrum ceremony meetings
+            * Coordinated requirements between project managers, solution architects and development teams
+            * Provided routine status update reports to senior management
       - layout: left
         title: UXP Systems
         link: uxpsystems.com
         sub_title: Software Developer
         caption: April 2013 - February 2017
-        quote: >
-          TBD
         description: | # this will include new lines to allow paragraphs
-            TBD
+            During my tenure in this role, I was a key contributor to the product's migration from a legacy monolith on-premise design to a microservice-based architecture delivered via a SaaS model. Some notable achievements during this time include:
+            * Designed and delivered a complete multi-tenancy strategy including internal product changes and database re-structuring
+            * Working in a technical/team lead role to guide a delivery team through a substantial product version upgrade
+            * Assumed the role of a scrum master, managing JIRA boards and running scrum ceremony meetings
+            * Coordinated requirements between project managers, solution architects and development teams
+            * Provided routine status update reports to senior management
 
   - title: Education # Title for the section
     layout: list # Type of content section (list/text)
