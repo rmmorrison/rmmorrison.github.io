@@ -113,7 +113,7 @@ content:
     content:
       - layout: left
         title: System and Method for Delegating Service Entitlements Across Multiple Media Services
-        sub_title: Praveen Gangadharan, Gemini Waghmare, Jay Deen, Jingyu Wang, Ryan Morrison
+        caption: Praveen Gangadharan, Gemini Waghmare, Jay Deen, Jingyu Wang, Ryan Morrison
         description: |
             A system and method are provided for delegating entitlements to media services. The method includes storing, at an intermediary system operable between a plurality of service providers and a plurality of user devices, authorization data for each of a plurality of media services associated with a first user, the authorization
             data enabling the intermediary system to access the corresponding media service from a service provider on behalf of the first user. The method also includes, after detecting a request to access one of the plurality of media services by a second user, using a set of stored associations to determine whether or not the second user
