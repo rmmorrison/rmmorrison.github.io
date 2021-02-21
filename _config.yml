@@ -119,6 +119,10 @@ content:
             data enabling the intermediary system to access the corresponding media service from a service provider on behalf of the first user. The method also includes, after detecting a request to access one of the plurality of media services by a second user, using a set of stored associations to determine whether or not the second user
             has been delegated an entitlement to the one of the plurality of media services by the first user. The method also includes, after determining that the second user has the entitlement, using corresponding authorization data to access the one of the plurality of media services on behalf of the second user, via a communication
             interface between the intermediary system and the corresponding service provider.
+            
+            U.S. Patent No [US20170359345A1](https://patents.google.com/patent/US20170359345A1/en), filed 2016-06-10, granted 2020-08-25
+            
+            Canada Patent [CA2932695A](https://patents.google.com/patent/CA2932695A1/en), filed 2016-06-10, pending
   - title: Education # Title for the section
     layout: list # Type of content section (list/text)
     content:
