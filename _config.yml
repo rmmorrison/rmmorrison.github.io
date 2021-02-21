@@ -62,39 +62,52 @@ content:
         sub_title: Senior Software Developer
         caption: February 2018 - Present
         description: | # this will include new lines to allow paragraphs
-            _UXP Systems, Inc. was acquired by Amdocs in February 2018._
+            _UXP Systems, Inc. was acquired by Amdocs in February 2018 to form the Digital Identity unit._
 
-            During my tenure in this role, I was a key contributor to the product's migration from a legacy monolith on-premise design to a microservice-based architecture delivered via a SaaS model. Some notable achievements during this time include:
-            * Designed and delivered a complete multi-tenancy strategy including internal product changes and database re-structuring
-            * Working in a technical/team lead role to guide a delivery team through a substantial product version upgrade
-            * Assumed the role of a scrum master, managing JIRA boards and running scrum ceremony meetings
-            * Coordinated requirements between project managers, solution architects and development teams
-            * Provided routine status update reports to senior management
+            After acquisition by Amdocs, the product (ULM - User Lifecycle Management) underwent a substantial migration from a legacy monolith intended for on-premise deployments to a microservice-based architecture delivered via a SaaS model.
+            I contributed a number of key features and accomplishments as part of this evolution, including the design and lead development effort to a complete multi-tenant strategy. In the lead up to a first production deployment, I led a performance analysis
+            and optimization effort, utilizing tools such as JMeter (for load generation) and JProfiler (for application profiling) to test, investigate performance concerns and deliver resolutions to ensure our SaaS product could withstand the anticipated load
+            as a result of a number of customers migrating or onboarding to the SaaS version of the product. I also contributed significantly to product documentation; working closely with technical writer(s) as part of a complete revitialization of the product's business process documentation, which received notable praise from both internal stakeholders
+            as well as customers.
+            
+            Since the migration to a SaaS product, I have led development of new Spring Boot-based microservices on the critical path for customer implementations, working against tight deadlines to deliver effective and performant solutions. I took end-to-end ownership responsibilities, from initial architectural design to
+            microservice development to building Docker images and Helm charts, culminating in deployment to Kubernetes clusters using fully automated CI/CD pipelines in Jenkins.
+            
+            Most recently, my roles and responsibilities have expanded to include a more DevOps role, including being the primary maintaner of Vindicia Connect's Kubernetes environments (dev/QA/staging/pre-production) as well as the production environment, and I continue to gain experience with Kubernetes/Helm while working closely
+            with the DevOps team.
+            
+            _Key Technologies_: Java 8, Spring (Boot, Web, Security), REST APIs, Hibernate ORM, MySQL/MariaDB, OpenID Connect/OAuth 2.0, Docker, Kubernetes, Helm, Hazelcast, Elasticsearch, nginx, fluent-bit, Prometheus/Grafana
       - layout: left
         title: UXP Systems
         link: uxpsystems.com
         sub_title: Senior Software Developer
         caption: February 2017 - February 2018
         description: | # this will include new lines to allow paragraphs
-            During my tenure in this role, I was a key contributor to the product's migration from a legacy monolith on-premise design to a microservice-based architecture delivered via a SaaS model. Some notable achievements during this time include:
-            * Designed and delivered a complete multi-tenancy strategy including internal product changes and database re-structuring
-            * Working in a technical/team lead role to guide a delivery team through a substantial product version upgrade
-            * Assumed the role of a scrum master, managing JIRA boards and running scrum ceremony meetings
-            * Coordinated requirements between project managers, solution architects and development teams
-            * Provided routine status update reports to senior management
+            In this period, I assumed a team and technical lead role to plan, lead and execute the migration of a customer's highly-customized video service solution to a modern version of the ULM (User Lifecycle Management) product. I was assigned several team members to work under my
+            guidance and leadership, performing significant upgrades and refactoring to align with the company's newest architectual guidelines and standards, while optimizing performance to meet the customer's future needs. I assumed a scrum master role additionally during this time,
+            using JIRA to write user stories for the team, lead scrum ceremonies (standup, sprint planning, backlog grooming), prioritize and organize the backlog, and acted as the interface between the team and other key stakeholders including internal Solution Architects as well as stakeholders
+            from the customer. I provided weekly status updates to senior management and leadership (including the CTO and CEO). The project was successful and the team seamlessly delivered the new version to the customer in a short maintenance window.
+            
+            _Key Technologies_: Java 8, Spring (Web, Security, Integration), REST APIs, Hibernate ORM, OpenID Connect/OAuth 2.0, SAML, Ansible, Hazelcast, MySQL/MariaDB, Elasticsearch, MongoDB, nginx
       - layout: left
         title: UXP Systems
         link: uxpsystems.com
         sub_title: Software Developer
         caption: April 2013 - February 2017
         description: | # this will include new lines to allow paragraphs
-            During my tenure in this role, I was a key contributor to the product's migration from a legacy monolith on-premise design to a microservice-based architecture delivered via a SaaS model. Some notable achievements during this time include:
-            * Designed and delivered a complete multi-tenancy strategy including internal product changes and database re-structuring
-            * Working in a technical/team lead role to guide a delivery team through a substantial product version upgrade
-            * Assumed the role of a scrum master, managing JIRA boards and running scrum ceremony meetings
-            * Coordinated requirements between project managers, solution architects and development teams
-            * Provided routine status update reports to senior management
-
+            I joined UXP Systems to work on the MINT Digital Experience Engine, a product providing telecom operators with individualized user profiles without the need to replace legacy BSS/OSS systems. I designed and implemented a new machine-to-machine interface for BSS/OSS and CRM systems to
+            use as a method of synchronizing data between the services. I then worked on and implemented a strategy using Hazelcast to enable highly-available and scalable deployments by sharing sessions and state across nodes.
+            
+            I led development efforts for an integration between MINT and YouTube, allowing customers to offer YouTube access personalized by the profiles configured by the end-user in MINT.
+            
+            I was selected to join a small, fast-paced team to design, develop and integrate a solution joining MINT with Microsoft/Ericsson's Mediaroom software as part of a Proof of Concept for a large Canadian telecommunications operator. I worked on integrating a parental controls solution onto Mediaroom set-top boxes,
+            as well as led a multi-company effort to integrate a recommendations engine into both MINT and Mediaroom. I also contributed backend development effort to a companion portal, allowing end-users to control certain user personalization settings on their set-top boxes from a more user friendly desktop or mobile browser.
+            The project was a success, with MINT providing user personalization and recommendation features that Mediaroom could not, and due to MINT's intelligent caching abilities for Mediaroom content, the customer observed a significant increase in platform performance, reducing the latency time to action on the customer's set-top boxes.
+            
+            I worked closely with the Chief Architect to design and implement a custom analytics pipeline. This pipeline transparently collected user engagement with the product, intended to be used as an input to BI (Tableau) or other big data (Hadoop). This pipeline was also used as the input to the recommendations engine implemented
+            as part of the Microsoft/Ericsson Mediaroom Proof of Concept.
+            
+            _Key Technologies_: Java 8, Spring (Web, Security, Integration), REST APIs, Hibernate ORM, OpenID Connect/OAuth 2.0, MySQL/MariaDB, Oracle DB, Hazelcast, Ansible, Elasticsearch, MongoDB, Redis, RabbitMQ, Microsoft/Ericsson Mediaroom, SOAP
   - title: Education # Title for the section
     layout: list # Type of content section (list/text)
     content:
