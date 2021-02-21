@@ -108,6 +108,17 @@ content:
             as part of the Microsoft/Ericsson Mediaroom Proof of Concept.
             
             _Key Technologies_: Java 8, Spring (Web, Security, Integration), REST APIs, Hibernate ORM, OpenID Connect/OAuth 2.0, MySQL/MariaDB, Oracle DB, Hazelcast, Ansible, Elasticsearch, MongoDB, Redis, RabbitMQ, Microsoft/Ericsson Mediaroom, SOAP
+  - title: Patents
+    layout: list
+    content:
+      - layout: left
+        title: System and Method for Delegating Service Entitlements Across Multiple Media Services
+        sub_title: Praveen Gangadharan, Gemini Waghmare, Jay Deen, Jingyu Wang, Ryan Morrison
+        description: |
+            A system and method are provided for delegating entitlements to media services. The method includes storing, at an intermediary system operable between a plurality of service providers and a plurality of user devices, authorization data for each of a plurality of media services associated with a first user, the authorization
+            data enabling the intermediary system to access the corresponding media service from a service provider on behalf of the first user. The method also includes, after detecting a request to access one of the plurality of media services by a second user, using a set of stored associations to determine whether or not the second user
+            has been delegated an entitlement to the one of the plurality of media services by the first user. The method also includes, after determining that the second user has the entitlement, using corresponding authorization data to access the one of the plurality of media services on behalf of the second user, via a communication
+            interface between the intermediary system and the corresponding service provider.
   - title: Education # Title for the section
     layout: list # Type of content section (list/text)
     content:
