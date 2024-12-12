@@ -13,8 +13,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Set up git user
-        uses: fregante/setup-git-user@v2
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -32,4 +30,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
+          cname: ryanmorrison.ca
         
