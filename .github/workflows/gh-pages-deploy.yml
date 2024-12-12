@@ -4,6 +4,8 @@ on:
     branches:
       - master
   workflow_dispatch:
+permissions:
+  contents: write # allow the default GitHub token to write back to the repository
 jobs:
   deploy:
     name: Deploy React App
