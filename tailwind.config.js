@@ -10,6 +10,8 @@ export default {
         light: '#d3d3d3',
         dark: '#a9a9a9'
       },
+      yellow: '#ffd644',
+      teal: '#00d1b2',
       intellij: {
         white: '#bcbec4',
         orange: '#cf8e6d',

@@ -2,6 +2,7 @@ import './App.css'
 
 import Navigation from './components/Navigation'
 import Introduction from './components/Introduction'
+import About from './components/About'
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       </header>
       <main className={`flex flex-col items-center`}>
         <Introduction />
+        <About />
       </main>
     </div>
   )
