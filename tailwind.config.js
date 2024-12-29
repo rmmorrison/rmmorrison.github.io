@@ -13,6 +13,7 @@ export default {
       intellij: {
         white: '#bcbec4',
         orange: '#cf8e6d',
+        purple: '#b189f5',
         brace: '#bcbec4',
         comment: '#5f826b'
       }

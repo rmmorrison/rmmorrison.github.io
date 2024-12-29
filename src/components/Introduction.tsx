@@ -1,3 +1,5 @@
+import Links from './Links'
+
 function Introduction() {
   return (
     <>
@@ -16,7 +18,13 @@ function Introduction() {
               {'// backend software engineer'}
             </p>
           </div>
-          <p className={`text-intellij-brace text-2x1`}> {`}`} </p>
+          <p className={`text-intellij-brace text-2xl`}> {`}`} </p>
+          <div className={`mt-10`}>
+            <div className={`text-sm text-intellij-white`}>
+              System.<span className={`text-intellij-purple`}>out</span>.println(bluesky, github, linkedin);
+            </div>
+            <Links />
+          </div>
         </div>
       </div>
     </>
