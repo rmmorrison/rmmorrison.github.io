@@ -1,0 +1,11 @@
+body {
+  background: #1e1f22;
+  font-family: 'SF Mono', 'Consolas', monospace;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 1rem;
+
+  @media (min-width: 576px) {
+    padding: 2rem 4rem;
+  }
+}
