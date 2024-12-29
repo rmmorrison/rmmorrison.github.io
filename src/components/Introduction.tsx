@@ -15,7 +15,7 @@ function Introduction() {
           </p>
           <div className={`my-9`}>
             <p className={`pl-6 text-lg text-intellij-comment`}>
-              {'// backend software engineer'}
+              {'// backend software engineer'}<span className={`blink`}>|</span>
             </p>
           </div>
           <p className={`text-intellij-brace text-2xl`}> {`}`} </p>

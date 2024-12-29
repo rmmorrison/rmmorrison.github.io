@@ -24,3 +24,13 @@ body {
     flex-direction: row;
   }
 }
+
+.blink {
+  animation: blinker 1s step-start infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
