@@ -3,6 +3,7 @@ import './App.css'
 import Navigation from './components/Navigation'
 import Introduction from './components/Introduction'
 import About from './components/About'
+import Contact from "./components/Contact.tsx";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <main className={`flex flex-col items-center`}>
         <Introduction />
         <About />
+        <Contact />
       </main>
     </div>
   )
