@@ -12,8 +12,10 @@ function Navigation() {
         <div className={`text-gray-light hover:text-gray-dark cursor-pointer`} onClick={() => scroll('about')}>
           about
         </div>
-        <div className={`text-gray-light hover:text-gray-dark cursor-pointer`}
-             onClick={() => scroll('contact')}>
+        <div className={`text-gray-light hover:text-gray-dark cursor-pointer`} onClick={() => scroll('patents')}>
+          patents
+        </div>
+        <div className={`text-gray-light hover:text-gray-dark cursor-pointer`} onClick={() => scroll('contact')}>
           contact
         </div>
       </div>
