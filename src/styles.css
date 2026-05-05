@@ -643,6 +643,10 @@ body[data-overlay-open="true"] .bg-canvas {
   content: "";
   position: absolute; left: 14px; right: 14px; bottom: -1px;
   height: 2px;
+  /* Letter-spacing adds trailing space after the final glyph that browsers
+     render *inside* the box, shifting the underline visually right of the
+     text. Pull it back by half the letter-spacing to recenter. */
+  transform: translateX(-0.09em);
   background: var(--accent);
   border-radius: 2px 2px 0 0;
   box-shadow: 0 0 14px color-mix(in oklch, var(--accent) 60%, transparent);
@@ -666,6 +670,65 @@ body[data-overlay-open="true"] .bg-canvas {
   border: 2px solid transparent;
   background-clip: padding-box;
 }
+
+/* Tab transition stage — entering and leaving panels overlap briefly,
+   cross-fading with a small horizontal slide. The stage establishes a
+   positioning context so the leaving panel can lift onto an absolute
+   layer without affecting layout of the entering one. */
+.tab-stage {
+  position: relative;
+}
+.tab-panel {
+  transition:
+    opacity 240ms cubic-bezier(.5,.05,.2,1),
+    transform 280ms cubic-bezier(.5,.05,.2,1),
+    filter 240ms cubic-bezier(.5,.05,.2,1);
+  will-change: opacity, transform;
+}
+/* Entering — start offset, end at rest. Direction picks the offset side. */
+.tab-stage[data-direction="fwd"]  .tab-panel[data-state="enter"] {
+  animation: tab-enter-fwd 320ms cubic-bezier(.5,.05,.2,1) both;
+}
+.tab-stage[data-direction="back"] .tab-panel[data-state="enter"] {
+  animation: tab-enter-back 320ms cubic-bezier(.5,.05,.2,1) both;
+}
+/* Leaving — float the old panel on top of the layout flow so it doesn't
+   force a height jump while the new panel is also rendering. */
+.tab-panel[data-state="leave"] {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.tab-stage[data-direction="fwd"]  .tab-panel[data-state="leave"] {
+  animation: tab-leave-fwd 240ms cubic-bezier(.5,.05,.2,1) both;
+}
+.tab-stage[data-direction="back"] .tab-panel[data-state="leave"] {
+  animation: tab-leave-back 240ms cubic-bezier(.5,.05,.2,1) both;
+}
+
+@keyframes tab-enter-fwd {
+  from { opacity: 0; transform: translate3d(18px, 0, 0); filter: blur(2px); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0);    filter: blur(0); }
+}
+@keyframes tab-enter-back {
+  from { opacity: 0; transform: translate3d(-18px, 0, 0); filter: blur(2px); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0);     filter: blur(0); }
+}
+@keyframes tab-leave-fwd {
+  from { opacity: 1; transform: translate3d(0, 0, 0); }
+  to   { opacity: 0; transform: translate3d(-18px, 0, 0); }
+}
+@keyframes tab-leave-back {
+  from { opacity: 1; transform: translate3d(0, 0, 0); }
+  to   { opacity: 0; transform: translate3d(18px, 0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tab-stage[data-direction] .tab-panel[data-state="enter"],
+  .tab-stage[data-direction] .tab-panel[data-state="leave"] {
+    animation: none;
+  }
+}
+
 .about-section { max-width: 62ch; }
 .about-section:focus-visible { outline: none; }
 
@@ -946,3 +1009,4 @@ a.pat-num:focus-visible {
   --twk-fg: var(--ink);
   --twk-accent: var(--accent);
 }
+  

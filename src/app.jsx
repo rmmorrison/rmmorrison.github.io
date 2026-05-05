@@ -8,6 +8,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/ {
   "hueShift": 0,
   "grain": 0.04,
   "mouseStrength": 0.35,
+  "brightness": 1.6,
   "showContent": true
 } /*EDITMODE-END*/;
 
@@ -50,42 +51,15 @@ const PRESETS = {
 };
 const PRESET_KEYS = Object.keys(PRESETS);
 
-// Fallback `useTweaks` used when the dev tweaks panel isn't loaded (i.e. in
-// production). It mirrors the shape returned by tweaks-panel.jsx's hook —
-// [tweaks, setTweak] — but persists to localStorage instead of posting back
-// to the editor, so a user toggling presets via the inline button still has
-// their choice stick across reloads.
-if (!window.useTweaks) {
-  const STORAGE_KEY = "ryanmorrison.ca:tweaks";
-  window.useTweaks = function useTweaksStub(defaults) {
-    const [state, setState] = useState(() => {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? { ...defaults, ...JSON.parse(raw) } : defaults;
-      } catch (_) {
-        return defaults;
-      }
-    });
-    const setTweak = (keyOrObj, val) => {
-      setState((prev) => {
-        const next =
-          typeof keyOrObj === "string"
-            ? { ...prev, [keyOrObj]: val }
-            : { ...prev, ...keyOrObj };
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-        } catch (_) {}
-        return next;
-      });
-    };
-    return [state, setTweak];
-  };
-}
-
 function App() {
   const canvasRef = useRef(null);
   const shaderRef = useRef(null);
-  const [tweaks, setTweak] = window.useTweaks(TWEAK_DEFAULTS);
+  // useTweaks is provided by tweaks-panel.jsx in dev. In prod (no tweaks bundle)
+  // it's not loaded — fall back to a static defaults pair so the rest of the
+  // component is identical across environments.
+  const [tweaks, setTweak] = window.useTweaks
+    ? window.useTweaks(TWEAK_DEFAULTS)
+    : [TWEAK_DEFAULTS, () => {}];
   const tweaksRef = useRef(tweaks);
   tweaksRef.current = tweaks;
 
@@ -101,6 +75,7 @@ function App() {
         hueShift: (t.hueShift / 180) * Math.PI,
         grain: t.grain,
         mouseStrength: t.mouseStrength,
+        brightness: t.brightness,
         colA: preset.colA,
         colB: preset.colB,
         colC: preset.colC,
@@ -127,7 +102,7 @@ function App() {
           }}
         />
       )}
-      <NebulaTweaks tweaks={tweaks} setTweak={setTweak} />
+      {window.TweaksPanel && <NebulaTweaks tweaks={tweaks} setTweak={setTweak} />}
     </>
   );
 }
@@ -299,8 +274,6 @@ function getTzOffset() {
 
 function NebulaTweaks({ tweaks, setTweak }) {
   const { TweaksPanel, TweakSection, TweakSlider, TweakToggle, TweakSelect } = window;
-  // In production the tweaks panel isn't loaded — render nothing.
-  if (!TweaksPanel) return null;
   const presetOptions = Object.entries(PRESETS).map(([v, p]) => ({ value: v, label: p.label }));
   return (
     <TweaksPanel title="Tweaks">
@@ -338,6 +311,14 @@ function NebulaTweaks({ tweaks, setTweak }) {
         />
       </TweakSection>
       <TweakSection label="Feel">
+        <TweakSlider
+          label="Brightness"
+          value={tweaks.brightness}
+          min={0.5}
+          max={2}
+          step={0.02}
+          onChange={(v) => setTweak("brightness", v)}
+        />
         <TweakSlider
           label="Mouse pull"
           value={tweaks.mouseStrength}
@@ -446,6 +427,55 @@ const PATENTS = [
   },
 ];
 
+// Renders the active tab's content, cross-faded with a slight horizontal slide.
+// Direction comes from the parent: +1 = swipe content to the left as we move forward
+// through the tab order; -1 = the reverse. The previous tab is kept mounted for one
+// transition cycle so its exit animates instead of snapping out.
+function TabPanel({ tabId, direction }) {
+  // [active, previous] — previous is rendered with data-state="leave" until its
+  // animation finishes, then dropped from the DOM.
+  const [stack, setStack] = useState(() => [{ id: tabId, key: 0 }]);
+  const keyRef = useRef(0);
+  const prevIdRef = useRef(tabId);
+
+  useEffect(() => {
+    if (prevIdRef.current === tabId) return;
+    keyRef.current += 1;
+    setStack((s) => [
+      { id: tabId, key: keyRef.current },                // entering
+      { id: prevIdRef.current, key: s[0].key, leaving: true }, // leaving (was prev active)
+    ]);
+    prevIdRef.current = tabId;
+    // Drop the leaving panel after the transition completes.
+    const t = setTimeout(() => {
+      setStack((s) => s.filter((p) => !p.leaving));
+    }, 320);
+    return () => clearTimeout(t);
+  }, [tabId]);
+
+  const renderById = (id) => {
+    if (id === "about") return <AboutSection />;
+    if (id === "experience") return <ExperienceSection />;
+    if (id === "patents") return <PatentsSection />;
+    return null;
+  };
+
+  return (
+    <div className="tab-stage" data-direction={direction >= 0 ? "fwd" : "back"}>
+      {stack.map((p) => (
+        <div
+          key={p.key}
+          className="tab-panel"
+          data-state={p.leaving ? "leave" : "enter"}
+        >
+          {renderById(p.id)}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
 function AboutOverlay({ open, onClose }) {
   const [tab, setTab] = useState("about");
   const dialogRef = useRef(null);
@@ -497,15 +527,33 @@ function AboutOverlay({ open, onClose }) {
     }
   }, [open, shown]);
 
-  // Arrow-key tab navigation
-  const onTabKeyDown = (e) => {
+  // Move to the next/previous tab — used by both keyboard and swipe handlers.
+  const stepTab = (delta) => {
     const idx = ABOUT_TABS.findIndex((t) => t.id === tab);
+    const next = (idx + delta + ABOUT_TABS.length) % ABOUT_TABS.length;
+    setTab(ABOUT_TABS[next].id);
+  };
+
+  // Track the previous tab so we know which direction to slide on change.
+  const prevTabRef = useRef(tab);
+  const [direction, setDirection] = useState(0);  // -1 = back, +1 = fwd, 0 = first paint
+  useEffect(() => {
+    if (prevTabRef.current === tab) return;
+    const prevIdx = ABOUT_TABS.findIndex((t) => t.id === prevTabRef.current);
+    const nextIdx = ABOUT_TABS.findIndex((t) => t.id === tab);
+    setDirection(nextIdx > prevIdx ? 1 : -1);
+    prevTabRef.current = tab;
+  }, [tab]);
+
+  // Arrow-key tab navigation — bound to the dialog (where focus lives) so
+  // it works regardless of which child element initiated the keypress.
+  const onTabKeyDown = (e) => {
     if (e.key === "ArrowRight") {
       e.preventDefault();
-      setTab(ABOUT_TABS[(idx + 1) % ABOUT_TABS.length].id);
+      stepTab(+1);
     } else if (e.key === "ArrowLeft") {
       e.preventDefault();
-      setTab(ABOUT_TABS[(idx - 1 + ABOUT_TABS.length) % ABOUT_TABS.length].id);
+      stepTab(-1);
     } else if (e.key === "Home") {
       e.preventDefault();
       setTab(ABOUT_TABS[0].id);
@@ -513,6 +561,26 @@ function AboutOverlay({ open, onClose }) {
       e.preventDefault();
       setTab(ABOUT_TABS[ABOUT_TABS.length - 1].id);
     }
+  };
+
+  // Swipe-to-switch on touch. Threshold = 50px horizontal; ignore the gesture
+  // if vertical motion dominates (so the body can scroll normally).
+  const swipeRef = useRef({ x: 0, y: 0, t: 0 });
+  const onSwipeStart = (e) => {
+    const t = e.touches[0];
+    swipeRef.current = { x: t.clientX, y: t.clientY, t: Date.now() };
+  };
+  const onSwipeEnd = (e) => {
+    const start = swipeRef.current;
+    const end = e.changedTouches[0];
+    if (!end) return;
+    const dx = end.clientX - start.x;
+    const dy = end.clientY - start.y;
+    const dt = Date.now() - start.t;
+    if (dt > 600) return;                       // too slow — not a swipe
+    if (Math.abs(dx) < 50) return;              // not far enough
+    if (Math.abs(dy) > Math.abs(dx) * 0.6) return; // mostly vertical — let scroll win
+    stepTab(dx < 0 ? +1 : -1);
   };
 
   if (!mounted) return null;
@@ -534,6 +602,7 @@ function AboutOverlay({ open, onClose }) {
         aria-labelledby="about-title"
         tabIndex={-1}
         ref={dialogRef}
+        onKeyDown={onTabKeyDown}
         // stop bubbled mousedowns so backdrop close doesn't fire
         onMouseDown={(e) => e.stopPropagation()}
       >
@@ -575,7 +644,6 @@ function AboutOverlay({ open, onClose }) {
           role="tablist"
           aria-label="Sections"
           ref={tabsRef}
-          onKeyDown={onTabKeyDown}
         >
           {ABOUT_TABS.map((t) => (
             <button
@@ -594,10 +662,12 @@ function AboutOverlay({ open, onClose }) {
           ))}
         </div>
 
-        <div className="about-body">
-          {tab === "about" && <AboutSection />}
-          {tab === "experience" && <ExperienceSection />}
-          {tab === "patents" && <PatentsSection />}
+        <div
+          className="about-body"
+          onTouchStart={onSwipeStart}
+          onTouchEnd={onSwipeEnd}
+        >
+          <TabPanel tabId={tab} direction={direction} />
         </div>
       </div>
     </div>

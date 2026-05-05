@@ -20,6 +20,7 @@
     uniform float u_hueShift;
     uniform float u_grain;
     uniform float u_mouseStrength;
+    uniform float u_brightness;
     uniform vec3  u_colA;         // void / deep navy
     uniform vec3  u_colB;         // teal mid
     uniform vec3  u_colC;         // bright teal highlight
@@ -142,6 +143,9 @@
       float g = (hash(gl_FragCoord.xy + u_time) - 0.5) * u_grain;
       col += g;
 
+      // overall brightness multiplier (lifts shadows + highlights uniformly)
+      col *= u_brightness;
+
       // gentle vignette — stronger at edges to keep corners legible
       float vig = smoothstep(1.2, 0.3, length(uv - 0.5));
       col *= mix(0.65, 1.0, vig);
@@ -205,6 +209,7 @@
       hueShift: gl.getUniformLocation(prog, "u_hueShift"),
       grain: gl.getUniformLocation(prog, "u_grain"),
       mouseStrength: gl.getUniformLocation(prog, "u_mouseStrength"),
+      brightness: gl.getUniformLocation(prog, "u_brightness"),
       colA: gl.getUniformLocation(prog, "u_colA"),
       colB: gl.getUniformLocation(prog, "u_colB"),
       colC: gl.getUniformLocation(prog, "u_colC"),
@@ -301,6 +306,7 @@
       gl.uniform1f(U.hueShift, p.hueShift);
       gl.uniform1f(U.grain, p.grain);
       gl.uniform1f(U.mouseStrength, p.mouseStrength);
+      gl.uniform1f(U.brightness, p.brightness != null ? p.brightness : 1.0);
       gl.uniform3fv(U.colA, p.colA);
       gl.uniform3fv(U.colB, p.colB);
       gl.uniform3fv(U.colC, p.colC);
