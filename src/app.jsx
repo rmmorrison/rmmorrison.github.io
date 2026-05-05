@@ -58,10 +58,22 @@ function App() {
   // to disk via postMessage. In prod (no tweaks bundle) it's not loaded; fall
   // back to plain React state so the in-page controls (preset cycler, etc.)
   // still work, just without persistence.
-  const [prodTweaks, setProdTweaks] = useState(TWEAK_DEFAULTS);
+  const [prodTweaks, setProdTweaks] = useState(() => {
+    // Seed from localStorage if available — currently just the preset.
+    try {
+      const stored = localStorage.getItem("nebula:preset");
+      if (stored && PRESET_KEYS.includes(stored)) {
+        return { ...TWEAK_DEFAULTS, preset: stored };
+      }
+    } catch (e) { /* private mode, etc. */ }
+    return TWEAK_DEFAULTS;
+  });
   const setProdTweak = (keyOrEdits, val) => {
     const edits = typeof keyOrEdits === "object" ? keyOrEdits : { [keyOrEdits]: val };
     setProdTweaks((prev) => ({ ...prev, ...edits }));
+    if ("preset" in edits) {
+      try { localStorage.setItem("nebula:preset", edits.preset); } catch (e) {}
+    }
   };
   const [tweaks, setTweak] = window.useTweaks
     ? window.useTweaks(TWEAK_DEFAULTS)
