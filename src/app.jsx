@@ -54,12 +54,18 @@ const PRESET_KEYS = Object.keys(PRESETS);
 function App() {
   const canvasRef = useRef(null);
   const shaderRef = useRef(null);
-  // useTweaks is provided by tweaks-panel.jsx in dev. In prod (no tweaks bundle)
-  // it's not loaded — fall back to a static defaults pair so the rest of the
-  // component is identical across environments.
+  // useTweaks is provided by tweaks-panel.jsx in dev — it persists changes back
+  // to disk via postMessage. In prod (no tweaks bundle) it's not loaded; fall
+  // back to plain React state so the in-page controls (preset cycler, etc.)
+  // still work, just without persistence.
+  const [prodTweaks, setProdTweaks] = useState(TWEAK_DEFAULTS);
+  const setProdTweak = (keyOrEdits, val) => {
+    const edits = typeof keyOrEdits === "object" ? keyOrEdits : { [keyOrEdits]: val };
+    setProdTweaks((prev) => ({ ...prev, ...edits }));
+  };
   const [tweaks, setTweak] = window.useTweaks
     ? window.useTweaks(TWEAK_DEFAULTS)
-    : [TWEAK_DEFAULTS, () => {}];
+    : [prodTweaks, setProdTweak];
   const tweaksRef = useRef(tweaks);
   tweaksRef.current = tweaks;
 
