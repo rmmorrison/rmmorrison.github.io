@@ -43,8 +43,8 @@ async function main() {
   // 3. Rewrite index.html: replace the dev script block with the prod one.
   const html = await readFile(join(SRC, "index.html"), "utf8");
   const prodScripts = [
-    '  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" integrity="sha384-G6erC9KWIRH1mqcZx6lO34LxL3oM6oEEDwzYMzS0VWshmu8Ngj7TFL6ICt5VOxe5" crossorigin="anonymous"></script>',
-    '  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" integrity="sha384-3xvkBkpkVvCFfTeYmh3hwzoBAFEqjDzPxhgtEog9Y9MalUKxk6X1ZzkSm/RuVotV" crossorigin="anonymous"></script>',
+    '  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>',
+    '  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>',
     '  <script src="shader.js"></script>',
     '  <script src="app.js"></script>',
   ].join("\n");
