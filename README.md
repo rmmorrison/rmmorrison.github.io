@@ -19,7 +19,7 @@ it's a development tool and isn't shipped to production.
 
 Pushes to `main` trigger `.github/workflows/deploy.yml`, which:
 
-1. Runs `npm ci` then `npm run build`.
+1. Runs `npm install` then `npm run build`.
 2. The build script (`build.mjs`) compiles `src/app.jsx` to `dist/app.js`,
    copies `styles.css` / `shader.js` / `CNAME` / `robots.txt` / `404.html`,
    and rewrites the script tags in `index.html` to load the compiled bundle
