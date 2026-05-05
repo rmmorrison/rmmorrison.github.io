@@ -58,8 +58,8 @@ async function main() {
   }
   await writeFile(join(OUT, "index.html"), rewritten, "utf8");
 
-  // 4. Static extras (custom domain, robots, 404 fallback).
-  const extras = ["CNAME", "robots.txt", "404.html"];
+  // 4. Static extras (custom domain, robots, 404 fallback, social card, favicon).
+  const extras = ["CNAME", "robots.txt", "404.html", "og.jpg", "favicon.svg", "favicon.ico", "favicon-32.png", "apple-touch-icon.png"];
   for (const file of extras) {
     const path = join(SRC, file);
     if (existsSync(path)) {
