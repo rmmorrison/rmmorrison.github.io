@@ -1,0 +1,396 @@
+/* ───────────────────────── Classic Mode (DOS-style) ─────────────────────────
+ * 80×25 character grid, deep blue background, monospace text.
+ * Original retro-tui design — not a clone of any specific OS.
+ */
+
+.dos {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #0000aa; /* classic CGA blue */
+  color: #ffffff;
+  font-family: "Px437 IBM VGA 8x16", "VT323", "IBM Plex Mono", "Consolas", "Courier New", monospace;
+  font-size: 16px;
+  line-height: 1.25;
+  letter-spacing: 0;
+  overflow: hidden;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  image-rendering: pixelated;
+  user-select: text;
+}
+
+/* CRT-ish scanline overlay (subtle) */
+.dos::after {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.12) 0,
+      rgba(0, 0, 0, 0.12) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+  z-index: 5;
+}
+/* Subtle vignette + chromatic glow */
+.dos::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
+  pointer-events: none;
+  z-index: 4;
+}
+
+.dos-screen {
+  position: relative;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  z-index: 1;
+}
+
+.dos-screen-boot {
+  display: block;
+  padding: 24px 28px;
+}
+
+/* ───── Boot screen ───── */
+.dos-boot {
+  background: #000000;
+}
+.dos-boot-text {
+  margin: 0;
+  font-family: inherit;
+  font-size: 16px;
+  color: #c8c8c8;
+  white-space: pre-wrap;
+}
+.dos-boot-text > div { min-height: 1.25em; }
+
+.dos-cursor {
+  display: inline-block;
+  width: 0.6em;
+  margin-left: 2px;
+  color: #c8c8c8;
+  animation: dos-blink 1s steps(2, start) infinite;
+  transform: translateY(0.05em);
+}
+
+@keyframes dos-blink {
+  to { visibility: hidden; }
+}
+
+.dos-blink {
+  animation: dos-blink 1s steps(2, start) infinite;
+  color: #ffff55;
+}
+
+/* ───── Title bar ───── */
+.dos-title {
+  background: #aaaaaa;
+  color: #000000;
+  padding: 2px 12px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.04em;
+}
+
+/* ───── Menu bar ───── */
+.dos-menubar {
+  background: #aaaaaa;
+  color: #000000;
+  padding: 2px 8px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border-bottom: 1px solid #555555;
+  font-weight: bold;
+}
+.dos-menu-item {
+  background: transparent;
+  border: 0;
+  padding: 2px 12px;
+  font: inherit;
+  color: #000000;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 6px;
+  align-items: baseline;
+}
+.dos-menu-item:hover {
+  background: #000000;
+  color: #ffffff;
+}
+.dos-menu-item.active {
+  background: #000000;
+  color: #ffffff;
+}
+.dos-menu-key {
+  color: #aa0000;
+  font-weight: bold;
+  text-decoration: underline;
+}
+.dos-menu-item.active .dos-menu-key,
+.dos-menu-item:hover .dos-menu-key {
+  color: #ffff55;
+}
+.dos-menu-spacer { flex: 1; }
+.dos-menu-file {
+  font-weight: normal;
+  color: #555555;
+  font-size: 14px;
+}
+
+/* ───── Body ───── */
+.dos-body {
+  position: relative;
+  padding: 16px 24px 0;
+  overflow: hidden;
+}
+
+/* Window with ASCII border feel */
+.dos-window {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: #0000aa;
+  border: 2px solid #ffffff;
+  box-shadow:
+    inset 0 0 0 1px #0000aa,
+    inset 0 0 0 2px #ffffff,
+    4px 4px 0 0 rgba(0, 0, 0, 0.5);
+}
+.dos-window-titlebar {
+  background: #0000aa;
+  color: #ffffff;
+  padding: 0 8px;
+  text-align: center;
+  margin-top: -10px; /* sit on top border */
+}
+.dos-window-title {
+  background: #0000aa;
+  padding: 0 8px;
+  display: inline-block;
+  color: #ffff55;
+  font-weight: bold;
+}
+.dos-window-body {
+  padding: 16px 22px 22px;
+  overflow: auto;
+  scrollbar-color: #aaaaaa #0000aa;
+}
+.dos-window-body::-webkit-scrollbar { width: 16px; }
+.dos-window-body::-webkit-scrollbar-track {
+  background: repeating-linear-gradient(
+    45deg,
+    #0000aa 0, #0000aa 2px, #5555ff 2px, #5555ff 4px
+  );
+}
+.dos-window-body::-webkit-scrollbar-thumb {
+  background: #aaaaaa;
+  border: 2px solid #555555;
+}
+
+/* ───── Content typography ───── */
+.dos-doc { max-width: 78ch; }
+.dos-h1 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  color: #ffff55;
+  font-weight: bold;
+}
+.dos-subtitle {
+  color: #55ffff;
+  margin-bottom: 6px;
+  letter-spacing: 0.04em;
+}
+.dos-rule {
+  color: #5555ff;
+  margin: 4px 0 14px;
+  font-weight: bold;
+  letter-spacing: -0.02em;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.dos-p {
+  margin: 0 0 1em;
+  color: #ffffff;
+  max-width: 72ch;
+}
+.dos-doc-footer {
+  margin-top: 18px;
+  color: #aaaaaa;
+}
+.dos-kbd {
+  display: inline-block;
+  font: inherit;
+  padding: 0 5px;
+  background: #aaaaaa;
+  color: #000000;
+  border: 1px solid #555555;
+  font-weight: bold;
+}
+
+/* ───── Work / experience ───── */
+.dos-job { margin-bottom: 18px; }
+.dos-job-head { color: #ffffff; }
+.dos-job-range { color: #ffff55; font-weight: bold; }
+.dos-job-role { color: #55ff55; font-weight: bold; }
+.dos-job-co { color: #55ffff; margin-bottom: 4px; }
+.dos-job-acq { color: #aaaaaa; }
+.dos-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0 14px;
+}
+.dos-bullets li {
+  margin-bottom: 2px;
+  color: #ffffff;
+  max-width: 70ch;
+}
+.dos-bullet { color: #ffff55; margin-right: 4px; }
+
+/* ───── Patents ───── */
+.dos-patent { margin-bottom: 16px; }
+.dos-patent-head { color: #ffffff; }
+.dos-patent-title {
+  color: #ffff55;
+  margin: 2px 0 2px 4px;
+  max-width: 72ch;
+}
+.dos-patent-cp { color: #55ffff; margin-left: 0; }
+.dos-patent-inventors {
+  color: #aaaaaa;
+  margin-top: 4px;
+  margin-left: 4px;
+  font-size: 14px;
+  max-width: 76ch;
+}
+.dos-me { color: #55ff55; font-weight: bold; }
+.dos-dim { color: #aaaaaa; }
+
+/* ───── Contact ───── */
+.dos-ini {
+  margin: 0 0 12px;
+  font-family: inherit;
+  font-size: 16px;
+  color: #aaaaaa;
+  white-space: pre-wrap;
+}
+.dos-contact-row {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  color: #ffffff;
+  margin: 2px 0;
+}
+.dos-contact-key {
+  color: #55ffff;
+  white-space: pre;
+}
+.dos-contact-eq { color: #aaaaaa; }
+.dos-link {
+  color: #ffff55;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+.dos-link:hover {
+  background: #ffff55;
+  color: #0000aa;
+  text-decoration: none;
+}
+
+/* ───── Status bar ───── */
+.dos-status {
+  background: #aaaaaa;
+  color: #000000;
+  padding: 2px 12px;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  font-size: 14px;
+  border-top: 1px solid #555555;
+}
+.dos-status-key b {
+  background: #000000;
+  color: #aaaaaa;
+  padding: 0 5px;
+  margin-right: 4px;
+  font-weight: bold;
+}
+.dos-status-spacer { flex: 1; }
+.dos-status-clock {
+  color: #000000;
+  font-weight: bold;
+  letter-spacing: 0.06em;
+}
+.dos-exit-btn {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: #000000;
+  cursor: pointer;
+}
+.dos-exit-btn:hover { text-decoration: underline; }
+.dos-exit-btn:hover b { background: #aa0000; color: #ffff55; }
+
+/* ───── Entry to classic mode (the trigger) ───── */
+.classic-trigger {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: color 200ms ease, opacity 200ms ease;
+}
+.classic-trigger:hover {
+  color: #ffff55;
+  opacity: 1;
+}
+
+.botbar-end {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+}
+@media (max-width: 720px), (hover: none) and (pointer: coarse) {
+  .botbar-end { display: none; }
+}
+
+/* Mobile — shrink classic mode font and let it scroll */
+@media (max-width: 720px) {
+  .dos { font-size: 13px; }
+  .dos-body { padding: 8px 10px 0; }
+  .dos-window-body { padding: 12px 12px 18px; }
+  .dos-status {
+    flex-wrap: wrap;
+    font-size: 11px;
+    gap: 8px 14px;
+    padding: 4px 10px;
+  }
+  .dos-menubar { flex-wrap: wrap; }
+  .dos-menu-file { display: none; }
+  .dos-rule { font-size: 12px; }
+  .dos-h1 { font-size: 15px; }
+}

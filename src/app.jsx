@@ -54,6 +54,13 @@ const PRESET_KEYS = Object.keys(PRESETS);
 function App() {
   const canvasRef = useRef(null);
   const shaderRef = useRef(null);
+  // Classic mode (DOS-style easter egg) — persisted across reloads.
+  const [classic, setClassic] = useState(() => {
+    try { return localStorage.getItem("rm:classic") === "1"; } catch (e) { return false; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem("rm:classic", classic ? "1" : "0"); } catch (e) {}
+  }, [classic]);
   // useTweaks is provided by tweaks-panel.jsx in dev — it persists changes back
   // to disk via postMessage. In prod (no tweaks bundle) it's not loaded; fall
   // back to plain React state so the in-page controls (preset cycler, etc.)
@@ -106,6 +113,13 @@ function App() {
 
   const time = useClock();
 
+  const classicContent = useMemo(() => ({
+    blurb: ABOUT_CONTENT.blurb,
+    experience: EXPERIENCE,
+    patents: PATENTS,
+    me: ME,
+  }), []);
+
   return (
     <>
       <canvas ref={canvasRef} className="bg-canvas" />
@@ -118,6 +132,13 @@ function App() {
             const next = PRESET_KEYS[(i + 1) % PRESET_KEYS.length];
             setTweak("preset", next);
           }}
+          onEnterClassic={() => setClassic(true)}
+        />
+      )}
+      {classic && window.ClassicMode && (
+        <window.ClassicMode
+          content={classicContent}
+          onExit={() => setClassic(false)}
         />
       )}
       {window.TweaksPanel && <NebulaTweaks tweaks={tweaks} setTweak={setTweak} />}
@@ -144,7 +165,7 @@ function formatDate(d) {
     .toUpperCase();
 }
 
-function SiteContent({ time, preset, onCyclePreset }) {
+function SiteContent({ time, preset, onCyclePreset, onEnterClassic }) {
   const presetDef = PRESETS[preset] || PRESETS.nebula;
   const heroStyle = { backgroundImage: presetDef.gradient };
   const [contactOpen, setContactOpen] = useState(false);
@@ -268,6 +289,16 @@ function SiteContent({ time, preset, onCyclePreset }) {
             </button>
             <span className="hint-suffix">preset</span>
           </span>
+        </div>
+        <div className="botbar-end">
+          <button
+            type="button"
+            className="classic-trigger"
+            onClick={onEnterClassic}
+            title="Boot into Classic Mode (DOS UI)"
+          >
+            classic.exe
+          </button>
         </div>
       </footer>
 
