@@ -1,0 +1,436 @@
+/* ───────────────────────── System 7 Mode ─────────────────────────
+ * Black-and-white desktop UI, 1-bit aesthetic, Chicago-style typography.
+ * Original interpretation — not a recreation of any specific Apple software.
+ */
+
+.sys7 {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  /* When System 7 mode is active, lock the page so there's nothing to
+     scroll behind the fixed desktop — prevents repaint shimmer of the
+     dither pattern during scroll attempts. */
+  /* 4×4 SVG checker tile, rasterized once and repeated. Equal black/white
+     averages to mid-gray, like the original Macintosh desktop. */
+  background-color: #fff;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4' shape-rendering='crispEdges'><rect width='2' height='2' x='0' y='0' fill='%23000'/><rect width='2' height='2' x='2' y='2' fill='%23000'/></svg>");
+  background-size: 4px 4px;
+  background-repeat: repeat;
+  color: #000;
+  font-family: "ChicagoFLF", "Geneva", "Charcoal", "Lucida Grande", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.25;
+  overflow: hidden;
+  -webkit-font-smoothing: none;
+  user-select: none;
+}
+.sys7-booting { /* full-screen splash with no desktop chrome */ }
+
+/* While System 7 mode is mounted, lock body scroll + overscroll so the
+   page itself can't scroll/bounce behind the fixed desktop. */
+html:has(.sys7),
+body:has(.sys7) {
+  overflow: hidden !important;
+  overscroll-behavior: none;
+  height: 100%;
+  margin: 0;
+}
+
+.sys7-menubar {
+  position: relative;
+  background: #fff;
+  border-bottom: 1px solid #000;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  padding: 0 18px 0 24px;
+  gap: 24px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  z-index: 100;
+}
+.sys7-menu {
+  cursor: default;
+  position: relative;
+}
+.sys7-menu-disabled {
+  color: #000;
+  /* the classic "screened" outline-on-stipple look for unavailable items */
+  text-shadow:
+    1px 0 #fff, -1px 0 #fff, 0 1px #fff, 0 -1px #fff;
+  opacity: 0.45;
+}
+.sys7-menu-spacer { flex: 1; }
+.sys7-menu-help {
+  background: transparent;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+  font-size: 12px;
+  text-decoration: underline;
+}
+.sys7-menu-apple {
+  cursor: pointer;
+  padding: 0;
+  margin-right: 4px;
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+}
+/* legacy text-glyph style (no longer used) */
+.sys7-apple-glyph { display: none; }
+
+.sys7-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #000;
+  box-shadow: 2px 2px 0 #000;
+  min-width: 240px;
+  padding: 4px 0;
+  z-index: 200;
+  font-size: 16px;
+  font-weight: 700;
+}
+.sys7-dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  padding: 5px 24px;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: default;
+  color: #000;
+}
+.sys7-dropdown-item:hover:not(.sys7-dropdown-disabled) {
+  background: #000;
+  color: #fff;
+}
+.sys7-dropdown-disabled { color: #888; }
+.sys7-dropdown-sep {
+  height: 1px;
+  background: #000;
+  margin: 3px 6px;
+  opacity: 0.4;
+}
+
+.sys7-desktop {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 28px);
+}
+
+/* Icons */
+.sys7-icon {
+  position: absolute;
+  width: 96px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: default;
+  padding: 8px 4px 4px;
+}
+.sys7-icon-glyph {
+  filter: none;
+  transform: scale(1.4);
+  transform-origin: center;
+  margin-bottom: 8px;
+}
+.sys7-icon.selected .sys7-icon-glyph {
+  filter: invert(1);
+}
+.sys7-icon-label {
+  margin-top: 12px;
+  padding: 1px 4px;
+  font-size: 14px;
+  font-weight: 600;
+  background: #fff;       /* opaque white plate so labels are readable on dither */
+  border: 1px solid transparent;
+  text-align: center;
+  max-width: 100%;
+  color: #000;
+}
+.sys7-icon.selected .sys7-icon-label {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+/* Window */
+.sys7-window {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #000;
+  box-shadow: 1px 1px 0 #000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.sys7-titlebar {
+  height: 22px;
+  border-bottom: 1px solid #000;
+  display: flex;
+  align-items: stretch;
+  background: #fff;
+  cursor: grab;
+  user-select: none;
+}
+.sys7-titlebar:active { cursor: grabbing; }
+.sys7-close {
+  width: 18px;
+  height: 18px;
+  margin: 2px 5px;
+  border: 1px solid #000;
+  background: #fff;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.sys7-close:hover {
+  background:
+    linear-gradient(to bottom right, transparent calc(50% - 1px), #000 calc(50% - 1px), #000 calc(50% + 1px), transparent calc(50% + 1px)),
+    linear-gradient(to bottom left, transparent calc(50% - 1px), #000 calc(50% - 1px), #000 calc(50% + 1px), transparent calc(50% + 1px)),
+    #fff;
+}
+.sys7-title-pinstripe {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      #000 0, #000 1px,
+      #fff 1px, #fff 3px
+    );
+  padding: 0 8px;
+  position: relative;
+}
+.sys7-title-text {
+  background: #fff;
+  padding: 0 12px;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.sys7-title-zoom {
+  width: 18px;
+  height: 18px;
+  margin: 2px 5px;
+  border: 1px solid #000;
+  background: #fff;
+  position: relative;
+  flex-shrink: 0;
+}
+.sys7-title-zoom {
+  width: 16px;
+  height: 16px;
+  margin: 1px 4px;
+  border: 1px solid #000;
+  background: #fff;
+  position: relative;
+  flex-shrink: 0;
+}
+.sys7-title-zoom::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px solid #000;
+}
+
+.sys7-window-body {
+  flex: 1;
+  overflow: auto;
+  padding: 14px 18px;
+  background: #fff;
+  user-select: text;
+}
+.sys7-window-body::-webkit-scrollbar { width: 16px; }
+.sys7-window-body::-webkit-scrollbar-track {
+  background:
+    repeating-linear-gradient(45deg, #000 0 1px, #fff 1px 2px);
+  border-left: 1px solid #000;
+}
+.sys7-window-body::-webkit-scrollbar-thumb {
+  background: #fff;
+  border: 1px solid #000;
+}
+
+/* Size box (bottom-right resize handle) */
+.sys7-size-box {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-top: 1px solid #000;
+  border-left: 1px solid #000;
+  cursor: nwse-resize;
+  z-index: 2;
+  box-sizing: border-box;
+}
+.sys7-size-box-inner {
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-right: 2px solid #000;
+  border-bottom: 2px solid #000;
+  box-sizing: border-box;
+}
+
+/* Document content */
+.sys7-doc {
+  font-family: "Charter", "Georgia", "Times New Roman", serif;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #000;
+}
+.sys7-doc-h1 {
+  font-family: "ChicagoFLF", "Geneva", "Charcoal", "Lucida Grande", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+.sys7-doc-sub {
+  font-family: "ChicagoFLF", "Geneva", sans-serif;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.sys7-doc-rule {
+  border: 0;
+  border-top: 1px solid #000;
+  margin: 8px 0;
+}
+.sys7-doc-p {
+  margin: 0 0 0.9em;
+}
+.sys7-bullets {
+  margin: 4px 0 8px 16px;
+  padding: 0;
+}
+.sys7-bullets li {
+  margin-bottom: 2px;
+}
+
+.sys7-job { margin-bottom: 12px; }
+.sys7-job-head { font-size: 13px; }
+.sys7-job-co { font-style: italic; margin: 1px 0 4px; }
+.sys7-job-acq { color: #444; }
+
+.sys7-patent { margin-bottom: 12px; }
+.sys7-patent-title { margin-bottom: 2px; }
+.sys7-patent-meta { font-size: 12px; color: #222; margin-bottom: 1px; }
+.sys7-patent-cp { padding-left: 14px; }
+.sys7-patent-inv { font-size: 12px; margin-top: 4px; }
+.sys7-me { text-decoration: underline; }
+
+.sys7-link { color: #000; text-decoration: underline; }
+.sys7-link:hover { background: #000; color: #fff; text-decoration: none; }
+
+.sys7-contact-table {
+  border-collapse: collapse;
+  margin-top: 4px;
+}
+.sys7-contact-table td { padding: 2px 16px 2px 0; vertical-align: top; }
+.sys7-contact-key { white-space: nowrap; }
+
+/* About This Website (the splash) */
+.sys7-about-window { box-shadow: 2px 2px 0 #000; }
+.sys7-about-body { padding: 14px 18px; font-family: "ChicagoFLF", "Geneva", sans-serif; }
+.sys7-about-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.sys7-about-bold { font-weight: 700; font-size: 13px; }
+.sys7-about-light { font-size: 12px; }
+.sys7-about-mem {
+  display: flex;
+  gap: 28px;
+  font-size: 12px;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  padding: 6px 0;
+  margin-bottom: 8px;
+}
+.sys7-about-meter {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: center;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.sys7-about-meter-bar {
+  display: inline-block;
+  height: 12px;
+  border: 1px solid #000;
+  position: relative;
+  background: #fff;
+}
+.sys7-about-meter-fill {
+  display: block;
+  height: 100%;
+  background: #000;
+}
+.sys7-about-hint {
+  font-size: 12px;
+  margin-top: 8px;
+  color: #444;
+  font-style: italic;
+}
+
+/* Boot splash — sits over the dithered desktop as a wide banner. */
+.sys7-boot {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  cursor: default;
+}
+.sys7-boot-banner {
+  width: min(80%, 880px);
+  height: 200px;
+  background: #fff;
+  border: 2px solid #000;
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px #000;
+  display: flex;
+  align-items: center;
+  padding: 0 14%;
+  position: relative;
+  font-family: "ChicagoFLF", "Geneva", sans-serif;
+}
+.sys7-boot-mac {
+  position: absolute;
+  left: 8%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 56px;
+  height: 56px;
+  image-rendering: pixelated;
+}
+.sys7-boot-text {
+  flex: 1;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.005em;
+  color: #000;
+  white-space: nowrap;
+}

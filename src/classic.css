@@ -348,7 +348,11 @@
 .dos-exit-btn:hover { text-decoration: underline; }
 .dos-exit-btn:hover b { background: #aa0000; color: #ffff55; }
 
-/* ───── Entry to classic mode (the trigger) ───── */
+/* ───── Entry to classic mode (the launcher) ───── */
+.classic-launcher {
+  position: relative;
+  display: inline-flex;
+}
 .classic-trigger {
   display: inline-flex;
   align-items: center;
@@ -359,14 +363,47 @@
   color: var(--ink-3);
   background: transparent;
   border: 0;
-  padding: 0;
+  padding: 2px 6px;
   cursor: pointer;
   opacity: 0.7;
-  transition: color 200ms ease, opacity 200ms ease;
+  transition: color 160ms ease, background 160ms ease, opacity 160ms ease;
 }
-.classic-trigger:hover {
-  color: #ffff55;
+.classic-trigger:hover,
+.classic-trigger[aria-expanded="true"] {
+  color: #000;
+  background: #fff;
   opacity: 1;
+}
+
+.classic-launcher-menu {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  min-width: 140px;
+  background: #0b0b10;
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+  z-index: 50;
+}
+.classic-launcher-item {
+  background: transparent;
+  border: 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  text-align: left;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: color 120ms ease, background 120ms ease;
+}
+.classic-launcher-item:hover {
+  color: #000;
+  background: #fff;
 }
 
 .botbar-end {

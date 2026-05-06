@@ -23,9 +23,9 @@ async function main() {
   if (existsSync(OUT)) await rm(OUT, { recursive: true, force: true });
   await mkdir(OUT, { recursive: true });
 
-  // 1. Compile app.jsx → app.js and classic.jsx → classic.js.
+  // 1. Compile JSX → JS for app and easter-egg modes.
   //    tweaks-panel.jsx is dev-only; we don't ship it.
-  const jsxFiles = ["app.jsx", "classic.jsx"];
+  const jsxFiles = ["app.jsx", "classic.jsx", "system7.jsx"];
   for (const file of jsxFiles) {
     const jsx = await readFile(join(SRC, file), "utf8");
     const compiled = await babel.transformAsync(jsx, {
@@ -44,6 +44,8 @@ async function main() {
   await copyFile(join(SRC, "shader.js"), join(OUT, "shader.js"));
   await copyFile(join(SRC, "styles.css"), join(OUT, "styles.css"));
   await copyFile(join(SRC, "classic.css"), join(OUT, "classic.css"));
+  await copyFile(join(SRC, "system7.css"), join(OUT, "system7.css"));
+  await copyFile(join(SRC, "apple-glyph.png"), join(OUT, "apple-glyph.png"));
 
   // 3. Rewrite index.html: replace the dev script block with the prod one.
   const html = await readFile(join(SRC, "index.html"), "utf8");
@@ -52,6 +54,7 @@ async function main() {
     '  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>',
     '  <script src="shader.js"></script>',
     '  <script src="classic.js"></script>',
+    '  <script src="system7.js"></script>',
     '  <script src="app.js"></script>',
   ].join("\n");
 

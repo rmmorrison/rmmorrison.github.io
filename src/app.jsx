@@ -61,6 +61,22 @@ function App() {
   useEffect(() => {
     try { localStorage.setItem("rm:classic", classic ? "1" : "0"); } catch (e) {}
   }, [classic]);
+  // System 7 mode (Mac-style easter egg) — persisted across reloads.
+  const [system7, setSystem7] = useState(() => {
+    try { return localStorage.getItem("rm:system7") === "1"; } catch (e) { return false; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem("rm:system7", system7 ? "1" : "0"); } catch (e) {}
+  }, [system7]);
+
+  // Lock body scroll while either overlay is active — prevents a flicker
+  // caused by the page scrolling underneath the fixed overlay.
+  useEffect(() => {
+    const active = classic || system7;
+    const prev = document.body.style.overflow;
+    if (active) document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [classic, system7]);
   // useTweaks is provided by tweaks-panel.jsx in dev — it persists changes back
   // to disk via postMessage. In prod (no tweaks bundle) it's not loaded; fall
   // back to plain React state so the in-page controls (preset cycler, etc.)
@@ -133,12 +149,19 @@ function App() {
             setTweak("preset", next);
           }}
           onEnterClassic={() => setClassic(true)}
+          onEnterSystem7={() => setSystem7(true)}
         />
       )}
       {classic && window.ClassicMode && (
         <window.ClassicMode
           content={classicContent}
           onExit={() => setClassic(false)}
+        />
+      )}
+      {system7 && window.System7Mode && (
+        <window.System7Mode
+          content={classicContent}
+          onExit={() => setSystem7(false)}
         />
       )}
       {window.TweaksPanel && <NebulaTweaks tweaks={tweaks} setTweak={setTweak} />}
@@ -165,7 +188,7 @@ function formatDate(d) {
     .toUpperCase();
 }
 
-function SiteContent({ time, preset, onCyclePreset, onEnterClassic }) {
+function SiteContent({ time, preset, onCyclePreset, onEnterClassic, onEnterSystem7 }) {
   const presetDef = PRESETS[preset] || PRESETS.nebula;
   const heroStyle = { backgroundImage: presetDef.gradient };
   const [contactOpen, setContactOpen] = useState(false);
@@ -291,14 +314,10 @@ function SiteContent({ time, preset, onCyclePreset, onEnterClassic }) {
           </span>
         </div>
         <div className="botbar-end">
-          <button
-            type="button"
-            className="classic-trigger"
-            onClick={onEnterClassic}
-            title="Boot into Classic Mode (DOS UI)"
-          >
-            classic.exe
-          </button>
+          <ClassicLauncher
+            onEnterClassic={onEnterClassic}
+            onEnterSystem7={onEnterSystem7}
+          />
         </div>
       </footer>
 
@@ -311,6 +330,60 @@ function SiteContent({ time, preset, onCyclePreset, onEnterClassic }) {
         }}
       />
     </main>
+  );
+}
+
+function ClassicLauncher({ onEnterClassic, onEnterSystem7 }) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDocClick = (e) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false);
+    };
+    const onKey = (e) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  return (
+    <div className="classic-launcher" ref={wrapRef}>
+      <button
+        type="button"
+        className="classic-trigger"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        title="Open a classic-mode easter egg"
+      >
+        classic
+      </button>
+      {open && (
+        <div className="classic-launcher-menu" role="menu">
+          <button
+            type="button"
+            role="menuitem"
+            className="classic-launcher-item"
+            onClick={() => { setOpen(false); onEnterClassic(); }}
+          >
+            ms-dos.exe
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            className="classic-launcher-item"
+            onClick={() => { setOpen(false); onEnterSystem7(); }}
+          >
+            system7.app
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
